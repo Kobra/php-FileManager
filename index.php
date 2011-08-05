@@ -21,11 +21,14 @@ $ImgPath = "files_img"; //Папка с картинками (должна бы�
 $TableWidth = "60%"; //Ширина основной таблицы
 $HtmlHeaders = true; //Отрисовывать заголовки html
 $DefaultSortMode = "rdate";
+$AllowWrite = true; //Разрешить запись файлов
 $ConfigFile = "_config.inc";//Если существует - использовать его! иначе все что выше! (не отображается в листинге файлов!)
 
 /* !!!DON`T EDIT!!! */
 $Find = isset($_POST["Find"]) ? $_POST["Find"] : false;
 $ContextFind = $NeedContextFind && isset($_POST["ContextFind"]) ? $_POST["ContextFind"] : false;
+
+$error = '';
 
 $Path=isset($_GET["Path"]) ? base64_decode($_GET["Path"]) : "";
 $Path=$Path==".."?"":$Path;
@@ -52,6 +55,16 @@ $lsdir = $Find || $ContextFind ? $ExploreDir : $lsdir;
 $Title = "Просмотр папки: ".DirDescr($ExploreDir.$Path);
 
 $Title = $Find || $ContextFind ? "Search results" : $Title;
+
+$PostMaxSize = ini_get('post_max_size');
+$PostMaxSize = strpos($PostMaxSize,'M') ? str_replace('M','',$PostMaxSize)*1048576 : $PostMaxSize;
+$PostMaxSize = strpos($PostMaxSize,'K') ? str_replace('K','',$PostMaxSize)*1024 : $PostMaxSize;
+
+$UploadMaxSize = ini_get('upload_max_filesize');
+$UploadMaxSize = strpos($UploadMaxSize,'M') ? str_replace('M','',$UploadMaxSize)*1048576 : $UploadMaxSize;
+$UploadMaxSize = strpos($UploadMaxSize,'K') ? str_replace('K','',$UploadMaxSize)*1024 : $UploadMaxSize;
+
+$MaxFileSize = $PostMaxSize > $UploadMaxSize ? $UploadMaxSize : $PostMaxSize;
 
 function readfile_chunked ($filename) {
 	$chunksize = 1*(1024*1024); // how many bytes per chunk
@@ -83,6 +96,32 @@ if($Path != "")
 	if(isset($_GET["DownLoad"]) && $_GET["DownLoad"] == 1) die(Download($Path));
 }
 
+if(isset($_GET['Delete']))
+{
+	$file = base64_decode($_GET['Delete']);
+	if(isset($_GET['Confirm']) && $_GET['Confirm'])
+	{
+		unlink($ExploreDir.'/'.$file);
+		die(header('Location: ./?Path='.base64_encode($Path)));
+	}
+	else
+	{
+		die('<a href="?Path='.base64_encode($Path).'&Delete='.$_GET['Delete'].'&Confirm=1">Delete file <b>'.$file.'</b>?</a>');
+	}
+}
+
+if($AllowWrite && isset($_POST['writefile']) && isset($_FILES['userfile']))
+{
+	if(file_exists($ExploreDir.'/'.$Path.'/'.$_FILES['userfile']['name']))
+	{
+		$error = 'Файл '.$_FILES['userfile']['name'].' существует!';
+	}
+	else
+	{
+		move_uploaded_file($_FILES['userfile']['tmp_name'],  $ExploreDir.'/'.$Path.'/'.$_FILES['userfile']['name']);
+	}
+}
+
 $FindArr = $ContextFind || $Find ? true : false;
 
 if($FindArr)
@@ -107,6 +146,18 @@ foreach ($ParentArr as $value) $ParentPath .= $value != "" ? "/".$value : "";
 $Path = $Find ? "" : $Path."";
 
 $HeadRow = $Title;
+
+//Write file form
+$WriteForm = '
+<DIV align="center">
+Новый файл (Макс. размер '.number_format($MaxFileSize/1024/1024,0,'.',' ').'Мб)
+<FORM method="POST" enctype="multipart/form-data" name="ChoseFile" id="ChoseFile">
+	<INPUT type="file" name="userfile" id="userfile" size="50">
+	<INPUT type="submit" name="writefile" id="writefile" value="Положить">
+</FORM>
+</DIV>
+';
+//End write file form
 
 //Описалово стилей
 $StyleArr["console"] = "
@@ -697,6 +748,7 @@ foreach ($Dirs as $dir)
 	$TD["date"] = FileDate($ExploreDir."/".$Path."/".$dir);
 	$TD["size"] = "<strong>&#060;FOLDER&#062;</strong>";
 	$TD["info"] = "[<a href=\"?Zip=1&Path=".base64_encode($Path."/".$dir)."\">ZIP</a>]";
+	if($AllowWrite) $TD["write"] = "";
 	
 	$Table[]=$TD;
 }
@@ -720,11 +772,13 @@ foreach ($Files as $file)
 	$filename = $UseImgIfExists ? CreateIcon($file,$filename) : $filename;
 	$DownLink = "<a href=\"?DownLoad=1&Path=".base64_encode($Path."/".$file)."\">".$filename."</a>";
 	$Info = "[<a href=\"javascript:OpenInfo('".base64_encode($Path."/".$file)."')\">Info</a>]";
+	$Write = is_writable($ExploreDir."/".$Path."/".$file) ? "[<a href=\"?Path=".base64_encode($Path)."&Delete=".base64_encode($Path."/".$file)."\">Delete</a>]" : "";
 	
 	$TD["name"] = $DownLink;
 	$TD["date"] = FileDate($lsdir."/".$file);
 	$TD["size"] = SizeFile($lsdir."/".$file);
 	$TD["info"] = $Info;
+	if($AllowWrite) $TD["write"] = $Write;
 	
 	$Table[]=$TD;
 }
@@ -737,7 +791,7 @@ $DescrArr = DirDescr($lsdir,false);
 foreach($DescrArr as $value) $DescrRow .= $value;
 $DescrRow = $DescrRow == "" ? "&nbsp;" : "\n<PRE>\n".$DescrRow."</PRE>\n";
 
-$FootRow = "Версия: <strong>".$Version."</strong> Разработка и дизайн: <strong><a href=\"http://194.67.56.93\" target=\"_blank\">3x</a></strong> this script was created by <strong><a href=\"mailto:lopatich@onmail.ru\">Kobra</a></strong> and <strong><a href=\"mailto:kerzzz@onmail.ru\">Kerzzz</a></strong>";
+$FootRow = "Версия: <strong>".$Version."</strong> Разработка и дизайн: <strong><a href=\"http://3x.ru\" target=\"_blank\">3x</a></strong> this script was created by <strong><a href=\"mailto:lopatich@onmail.ru\">Kobra</a></strong> and <strong><a href=\"mailto:kerzzz@onmail.ru\">Kerzzz</a></strong>";
 
 function ls($Path)
 {
@@ -1216,7 +1270,17 @@ echo $Tmp;
 <tr>
 	<th height="1" class="Head"><?=$HeadRow?>
 		<table width="100%" cellspacing="0" cellpadding="0" border="0" style="font-size:10pt;">
+<?if($error != ''){?>
+                        <tr align='center'><td colspan="2">
+                        	<h3><font color='red'><?=$error?></font></h3>
+			</td></tr>
+<?}?>
 			<tr align="center"><td><?=$FindForm?></td><td><?=$StyleForm?></td></tr>
+<?if($AllowWrite && is_writable($ExploreDir.'/'.$Path)){?>
+			<tr><td colspan="2">
+<?=$WriteForm?>
+			</td></tr>
+<?}?>
 		</table>
 	</th>
 </tr>
@@ -1228,10 +1292,13 @@ echo $Tmp;
 			<td height="1" align="left" class="Head">Название</td>
 			<td height="1" align="center" class="Head" width="22%">Дата</td>
 			<td height="1" align="center" class="Head" width="15%">Размер</td>
-			<td height="1" class="Head" width="10%" nobr><?=$SortForm?></td>
+			<td height="1" class="Head" width="10%">&nbsp;</td>
+<?if($AllowWrite){?>
+			<td height="1" class="Head" width="10%">&nbsp;</td>
+<?}?>
 		</tr>
 		<tr>
-			<td height="1" class="DataRow2" colspan="4"><strong><?=$LinkToUp?></strong></td>
+			<td height="1" class="DataRow2" colspan="<?=$AllowWrite?5:4;?>"><strong><?=$LinkToUp?></strong></td>
 		</tr>
 <?$StyleClass="DataRow2";foreach($Table as $TD){$StyleClass=$StyleClass=="DataRow1"?"DataRow2":"DataRow1";?>
 		<tr>
@@ -1239,6 +1306,9 @@ echo $Tmp;
 			<td height="1" align="right" class="<?=$StyleClass?>"><pre><?=nbsp($TD["date"])?></pre></td>
 			<td height="1" align="right" class="<?=$StyleClass?>"><pre><?=nbsp($TD["size"])?></pre></td>
 			<td height="1" align="center" class="<?=$StyleClass?>"><pre><?=nbsp($TD["info"])?></pre></td>
+<?if($AllowWrite && isset($TD["write"])){?>
+                        <td height="1" align="center" class="<?=$StyleClass?>"><pre><?=nbsp($TD["write"])?></pre></td>
+<?}?>
 		</tr>
 <?}?>
 		<tr>
@@ -1246,6 +1316,9 @@ echo $Tmp;
 			<td class="DataRow1">&nbsp;</td>
 			<td class="DataRow1">&nbsp;</td>
 			<td class="DataRow1">&nbsp;</td>
+<?if($AllowWrite){?>
+                        <td class="DataRow1">&nbsp;</td>
+<?}?>
 		</tr>
 	</table>
 </tr>
