@@ -1,0 +1,4 @@
+File Manager, who needs only one file (the remaining optional)
+
+may use *_config.inc* -  for easy upgrade code (filename must be set in script)
+may use *files_img* folder - for icons file type (folder may set in script or _config)
