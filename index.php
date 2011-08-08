@@ -806,6 +806,7 @@ function ls($Path)
 	{
 		if($file == "." || $file == ".." || $file == $DescrFile || $file == $ScriptName) continue;
 		if(($Path == $ExploreDir || $Path == $ExploreDir."/") && $file == $ConfigFile) continue;
+		if(($Path == $ExploreDir || $Path == $ExploreDir."/") && $file == $ConfigFile.'.example') continue;
 		if(!$ShowDotFiles && $file[0] == ".") continue;
 		if(!is_dir($Path."/".$file) && substr($file,-1*strlen($FileInfoExt)) == $FileInfoExt && file_exists($Path."/".str_replace(substr($file,strlen($file)-strlen($FileInfoExt),strlen($FileInfoExt)),"",$file))) continue;
 		if(is_dir($file) && ($Path == $ExploreDir || $Path == $ExploreDir."/") && $file == $ImgPath) continue;
