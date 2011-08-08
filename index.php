@@ -1072,10 +1072,12 @@ function CreateImgTag($img,$alt="",$align="",$name="")
 	$Referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "http://" ;
 	list($method) = explode("://",$Referer);
 	$imgfile = $method."://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'].$img;
-	$FileSize = GetImageSize($imgfile);
-	$width = $FileSize[0]; $height = $FileSize[1];
 	
-	return "<IMG border=0 src='$img' alt='$alt' title='$alt' height='$height' width='$width'".$align.$name.">";
+	//$FileSize = GetImageSize($imgfile);
+	//$width = $FileSize[0]; $height = $FileSize[1];
+	
+	//return "<IMG border=0 src='$img' alt='$alt' title='$alt' height='$height' width='$width'".$align.$name.">";
+	return "<IMG border=0 src='$img' alt='$alt' title='$alt'".$align.$name.">";
 }
 
 function CreateImgTagWoHTTP($img,$alt="",$align="left",$name="")
