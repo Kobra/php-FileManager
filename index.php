@@ -872,7 +872,8 @@ function Find($key)
 	$Arr = _AllFiles($ExploreDir.'/'.$Path);
 	foreach ($Arr as $dir => $files)
 	{
-		$last = array_pop(explode("/",substr($dir,0,-1)));
+		$lastdir = explode("/",substr($dir,0,-1));
+		$last = array_pop($lastdir);
 		if(strpos("x".strtolower($last),strtolower($key)) && $dir != $ExploreDir."/") $ret["dirs"][] = substr(str_replace($ExploreDir."/","",$dir),0,-1);
 		
 		foreach ($files as $file)
