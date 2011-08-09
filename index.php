@@ -1296,7 +1296,7 @@ echo $Tmp;
 			<td height="1" align="left" class="Head">Название</td>
 			<td height="1" align="center" class="Head" width="22%">Дата</td>
 			<td height="1" align="center" class="Head" width="15%">Размер</td>
-			<td height="1" class="Head" width="10%">&nbsp;</td>
+			<td height="1" class="Head" width="10%" nobr><?=$SortForm?></td>
 <?if($AllowWrite){?>
 			<td height="1" class="Head" width="10%">&nbsp;</td>
 <?}?>
