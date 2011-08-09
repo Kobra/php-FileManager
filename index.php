@@ -699,7 +699,7 @@ $FindForm = "
 <form method='POST'>
 	Поиск:
 	<input type=\"text\" name=\"Find\" id=\"Find\" size=\"12\" value=\"".$Find."\"";
-$FindForm .= $NeedContextFind && !$AlwaysContextFind ? " onchange=\"EnDisContextFind()\">\n" : ">\n";
+$FindForm .= $NeedContextFind && !$AlwaysContextFind ? " onkeyup=\"EnDisContextFind()\">\n" : ">\n";
 $FindForm .= $NeedContextFind ? "	Подстрока: <input type=\"text\" name=\"ContextFind\" id=\"ContextFind\" size=\"12\" value=\"".$ContextFind."\"".$disabledContext.">\n" : "";
 $FindForm .= "	<input type=\"submit\" value=\"->\">
 	<INPUT type=\"button\" value=\"X\" onclick=\"Find.value=''; submit();\">
