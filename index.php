@@ -1041,12 +1041,14 @@ function FileInfo($File)
 	
 	$FileArr = file_exists($ExploreDir.$File.$FileInfoExt) ? array_merge($InfoArr,file($ExploreDir.$File.$FileInfoExt)) : $InfoArr;
 	
+	$FilePathArr = explode("/",cyr_convert($File,$CharsetOnFS,"u"));
+	
 	echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
-	<title>Информация о '.str_replace($FileInfoExt,"",array_pop(explode("/",cyr_convert($File,$CharsetOnFS,"u")))).'</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Информация о '.str_replace($FileInfoExt,"",array_pop($FilePathArr)).'</title>
 </head>
 '. $StyleBlock .'
 <body>
