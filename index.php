@@ -915,8 +915,6 @@ function ContextFind($key,$FileArr = false)
 		}
 	}
 	
-	$Arr = _AllFiles($ExploreDir.'/'.$Path);
-	
 	if($FileArr)
 	{
 		foreach ($FileArr["dirs"] as $dir)
@@ -926,11 +924,12 @@ function ContextFind($key,$FileArr = false)
 		}
 		foreach ($FileArr["files"] as $file)
 		{
-			if(grep($file,$key)) $ret["files"][] = str_replace($ExploreDir."/","",$file);
+			if(grep($ExploreDir."/".$file,$key)) $ret["files"][] = str_replace($ExploreDir."/","",$file);
 		}
 	}
 	else
 	{
+		$Arr = _AllFiles($ExploreDir.'/'.$Path);
 		foreach ($Arr as $dir => $files)
 		{
 			foreach ($files as $file)
