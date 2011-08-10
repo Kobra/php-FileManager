@@ -11,7 +11,7 @@ $Zip = "/usr/bin/zip"; //Путь к бинарникам архиватора
 $Tmp = "/tmp"; //Путь к временному каталогу
 $ShowThumbnails = true; //Флаг отображения тумбнайлов (true/false или 1/0)
 $MaxSide = "2000"; //Максимальный размер стороны картинки для создания тумбнайлов (зависит от объема памяти выделенной для пхп)
-$ThmbnailSide = 300; //Сторона тумбнайла. т.е. картинка в листинге смасштабируется по этой сторне по высоте или по ширине (смотря что больше)
+$ThumbnailSide = 300; //Сторона тумбнайла. т.е. картинка в листинге смасштабируется по этой сторне по высоте или по ширине (смотря что больше)
 $CharsetOnFS = "u"; //k - koi8-r, w - windows-1251, u - UTF-8. Заглушка от старой функции convert-cyr-string. Переписано на iconv!
 $DefaultStyle = "gray"; //Какой стиль использовать по умолчанию
 $NeedContextFind = true; //Флаг использования контекстного поиска в текстовых файлах
@@ -37,7 +37,7 @@ $Path=str_replace("../","",$Path);
 $Path=str_replace("./","",$Path);
 $Path=str_replace("//","/",$Path);
 
-$ImgExtArr = array(".jpg",".jpeg",".gif");
+$ImgExtArr = array(".jpg",".jpeg",".gif",".png");
 $Version = "2.0.5";
 
 if(file_exists($ConfigFile)) require_once($ConfigFile);
@@ -92,7 +92,7 @@ if($Path != "")
 {
 	if(isset($_GET["Zip"]) && $_GET["Zip"] == 1 && $NeedZip) die(ZipDir($lsdir));
 	if(isset($_GET["Info"]) && $_GET["Info"] == 1) die(FileInfo($Path));
-	if(isset($_GET["Img"]) && $_GET["Img"] == 1) die(CreateTumbnail($Path));
+	if(isset($_GET["Img"]) && $_GET["Img"] == 1) die(CreateThumbnail($Path));
 	if(isset($_GET["DownLoad"]) && $_GET["DownLoad"] == 1) die(Download($Path));
 }
 
@@ -1124,9 +1124,9 @@ function CreateIcon($file,$str)
 	return $ret;
 }
 
-function CreateTumbnail($Img)
+function CreateThumbnail($Img)
 {
-	global $ExploreDir, $ThmbnailSide, $CharsetOnFS, $MaxSide;
+	global $ExploreDir, $ThumbnailSide, $CharsetOnFS, $MaxSide;
 	
 	$Img = cyr_convert($ExploreDir."/".$Img,"u",$CharsetOnFS);
 	if($Img == $ExploreDir."/" || !file_exists($Img)) die();
@@ -1138,14 +1138,30 @@ function CreateTumbnail($Img)
 	
 	header("Content-type: image/png");
 	$thumb = false;
+	/*
 	if($create)	$thumb = strpos("x".strtolower($Img),"jpg") || strpos("x".strtolower($Img),"jpeg")
 			? @imagecreatefromjpeg($Img)
 			: @imagecreatefromgif($Img);
+	*/
+	
+	switch (strtolower($imgname["extension"]))
+	{
+		case 'jpg';
+		case 'jpeg';
+			$thumb = @imagecreatefromjpeg($Img);
+			break;
+		case 'gif':
+			$thumb = @imagecreatefromgif($Img);
+			break;
+		default:
+			$thumb = @imagecreatefrompng($Img);
+			break;
+	}
 	
 	if (!$thumb)
 	{ /* See if it failed */
 		$ErrorString = $imgname["basename"];
-		$thumb = imagecreate ($ThmbnailSide, 30); /* Create a blank image */
+		$thumb = imagecreate ($ThumbnailSide, 30); /* Create a blank image */
 		$bgc = imagecolorallocate ($thumb, 255, 255, 255);
 		$tc = imagecolorallocate ($thumb, 0, 0, 0);
 		$bgc = imagecolortransparent ($thumb, $bgc);
@@ -1156,10 +1172,10 @@ function CreateTumbnail($Img)
 	else
 	{
 		$Img = $thumb;
-		if($width > $ThmbnailSide || $height > $ThmbnailSide)
+		if($width > $ThumbnailSide || $height > $ThumbnailSide)
 		{
 			$r = $height/$width;
-			$newheight = ($height > $width) ? $ThmbnailSide : $ThmbnailSide*$r;
+			$newheight = ($height > $width) ? $ThumbnailSide : $ThumbnailSide*$r;
 			$newwidth = $newheight/$r;
 			$thumb = ImageCreateTrueColor($newwidth,$newheight);
 			
