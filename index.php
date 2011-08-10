@@ -38,7 +38,7 @@ $Path=str_replace("./","",$Path);
 $Path=str_replace("//","/",$Path);
 
 $ImgExtArr = array(".jpg",".jpeg",".gif",".png");
-$Version = "2.0.5";
+$Version = "2.0.6";
 
 if(file_exists($ConfigFile)) require_once($ConfigFile);
 
