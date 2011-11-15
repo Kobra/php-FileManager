@@ -22,7 +22,7 @@ $TableWidth = "60%"; //Ширина основной таблицы
 $HtmlHeaders = true; //Отрисовывать заголовки html
 $DefaultSortMode = "rdate";
 $AllowWrite = true; //Разрешить запись файлов
-$ConfigFile = "_config.inc";//Если существует - использовать его! иначе все что выше! (не отображается в листинге файлов!)
+$ConfigFile = "_config.inc.php";//Если существует - использовать его! иначе все что выше! (не отображается в листинге файлов!)
 
 /* !!!DON`T EDIT!!! */
 $Find = isset($_POST["Find"]) ? $_POST["Find"] : false;
