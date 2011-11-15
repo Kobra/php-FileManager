@@ -20,9 +20,10 @@ $UseImgIfExists = true; //Использовать картинки, если о
 $ImgPath = "files_img"; //Папка с картинками (должна быть в одной папке со скриптом)
 $TableWidth = "60%"; //Ширина основной таблицы
 $HtmlHeaders = true; //Отрисовывать заголовки html
-$DefaultSortMode = "rdate";
+$DefaultSortMode = "name";
 $AllowWrite = true; //Разрешить запись файлов
 $ConfigFile = "_config.inc.php";//Если существует - использовать его! иначе все что выше! (не отображается в листинге файлов!)
+$Lang = 'english';
 
 /* !!!DON`T EDIT!!! */
 $Find = isset($_POST["Find"]) ? $_POST["Find"] : false;
@@ -40,7 +41,23 @@ $Path=str_replace("//","/",$Path);
 $ImgExtArr = array(".jpg",".jpeg",".gif",".png");
 $Version = "2.0.6";
 
+$Version .= "-intl";
+
 if(file_exists($ConfigFile)) require_once($ConfigFile);
+
+if(file_exists("lang/$Lang.inc.php"))
+	require_once("lang/$Lang.inc.php");
+else {
+define('L_NAME','Name');
+define('L_DATE','Date');
+define('L_SIZE','Size');
+define('L_FOLDER','Folder');
+define('L_SEARCH','Search');
+define('L_CONTAINS','Contains');
+define('L_THEME','Theme');
+define('L_VERSION','Version');
+define('L_COPYRIGHT','Copyrights');
+}
 
 if(!file_exists($ExploreDir."/".cyr_convert($Path,"u",$CharsetOnFS))) $Path = "";
 
@@ -52,7 +69,7 @@ $lsdir = $ExploreDir."/".$Path;
 
 $lsdir = $Find || $ContextFind ? $ExploreDir : $lsdir;
 
-$Title = "Просмотр папки: ".DirDescr($ExploreDir.$Path);
+$Title = L_FOLDER.": ".DirDescr($ExploreDir.$Path);
 
 $Title = $Find || $ContextFind ? "Search results" : $Title;
 
@@ -293,6 +310,8 @@ $StyleArr["blue"] = "
 		color: #F0F8FF;
 		font-family: sans-serif;
 		font-size: 12pt;
+		text-align : left;
+		padding-left: 4px;
 		border-bottom: 1px solid #00008B;
 	}
 	TD.Descr{
@@ -687,7 +706,7 @@ foreach(array_keys($StyleArr) as $style)
 }
 $StyleForm = "
 <form method='POST'>
-	Стиль:
+	".L_THEME.":
 	<select name='style' id='style' onchange='submit()'>
 ".$StyleOptions."\t</select>
 </form>
@@ -697,10 +716,10 @@ $StyleForm = "
 $disabledContext = !$AlwaysContextFind ? " disabled " : "" ;
 $FindForm = "
 <form method='POST'>
-	Поиск:
+	".L_SEARCH.":
 	<input type=\"text\" name=\"Find\" id=\"Find\" size=\"12\" value=\"".$Find."\"";
 $FindForm .= $NeedContextFind && !$AlwaysContextFind ? " onkeyup=\"EnDisContextFind()\">\n" : ">\n";
-$FindForm .= $NeedContextFind ? "	Подстрока: <input type=\"text\" name=\"ContextFind\" id=\"ContextFind\" size=\"12\" value=\"".$ContextFind."\"".$disabledContext.">\n" : "";
+$FindForm .= $NeedContextFind ? "	".L_CONTAINS.": <input type=\"text\" name=\"ContextFind\" id=\"ContextFind\" size=\"12\" value=\"".$ContextFind."\"".$disabledContext.">\n" : "";
 $FindForm .= "	<input type=\"submit\" value=\"->\">
 	<INPUT type=\"button\" value=\"X\" onclick=\"Find.value=''; submit();\">
 </form>\n";
@@ -791,7 +810,7 @@ $DescrArr = DirDescr($lsdir,false);
 foreach($DescrArr as $value) $DescrRow .= $value;
 $DescrRow = $DescrRow == "" ? "&nbsp;" : "\n<PRE>\n".$DescrRow."</PRE>\n";
 
-$FootRow = "Версия: <strong>".$Version."</strong> Разработка и дизайн: <strong><a href=\"http://3x.ru\" target=\"_blank\">3x</a></strong> this script was created by <strong><a href=\"mailto:lopatich@onmail.ru\">Kobra</a></strong> and <strong><a href=\"mailto:kerzzz@onmail.ru\">Kerzzz</a></strong>";
+$FootRow = L_VERSION.": <strong>".$Version."</strong> ".L_COPYRIGHT.": <strong><a href=\"http://3x.ru\" target=\"_blank\">3x</a></strong> this script was created by <strong><a href=\"mailto:lopatich@onmail.ru\">Kobra</a></strong> and <strong><a href=\"mailto:kerzzz@onmail.ru\">Kerzzz</a> </strong> intl by <a href=\"http://github.com/tpruvot/php-FileManager\">T.Pruvot</a>";
 
 function ls($Path)
 {
@@ -1310,9 +1329,9 @@ echo $Tmp;
 	<!--  -->
 	<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" class="DirTable">
 		<tr>
-			<td height="1" align="left" class="Head">Название</td>
-			<td height="1" align="center" class="Head" width="22%">Дата</td>
-			<td height="1" align="center" class="Head" width="15%">Размер</td>
+			<td height="1" align="left" class="Head"><?=L_NAME?></td>
+			<td height="1" align="center" class="Head" width="22%"><?=L_DATE?></td>
+			<td height="1" align="center" class="Head" width="15%"><?=L_SIZE?></td>
 			<td height="1" class="Head" width="10%" nobr><?=$SortForm?></td>
 <?if($AllowWrite){?>
 			<td height="1" class="Head" width="10%">&nbsp;</td>
