@@ -766,6 +766,7 @@ foreach ($Dirs as $dir)
 	$TD["name"] = "<strong>".$DirLink."</strong>";
 	$TD["date"] = FileDate($ExploreDir."/".$Path."/".$dir);
 	$TD["size"] = "<strong>&#060;FOLDER&#062;</strong>";
+	$TD["link"] = FileLink($lsdir."/".$file);
 	$TD["info"] = "[<a href=\"?Zip=1&Path=".base64_encode($Path."/".$dir)."\">ZIP</a>]";
 	if($AllowWrite) $TD["write"] = "";
 	
@@ -796,6 +797,7 @@ foreach ($Files as $file)
 	$TD["name"] = $DownLink;
 	$TD["date"] = FileDate($lsdir."/".$file);
 	$TD["size"] = SizeFile($lsdir."/".$file);
+	$TD["link"] = FileLink($lsdir."/".$file);
 	$TD["info"] = $Info;
 	if($AllowWrite) $TD["write"] = $Write;
 	
@@ -992,9 +994,18 @@ function SizeFile($filename)
 	global $CharsetOnFS;
 	$ret = intval(filesize(cyr_convert($filename,"u",$CharsetOnFS)));
 	
+	if (is_link($filename)) $ret=0;
+
 	$ret = $ret/1024;
 	$ret = number_format($ret,2,","," ")." Kb";
 	
+	return $ret;
+}
+
+function FileLink($filename)
+{
+	$ret = "";
+	if (is_link($filename)) $ret = "→".readlink($filename);
 	return $ret;
 }
 
@@ -1342,7 +1353,7 @@ echo $Tmp;
 		</tr>
 <?$StyleClass="DataRow2";foreach($Table as $TD){$StyleClass=$StyleClass=="DataRow1"?"DataRow2":"DataRow1";?>
 		<tr>
-			<td height="1" align="left" class="<?=$StyleClass?>"><?=nbsp($TD["name"])?></td>
+			<td height="1" align="left" class="<?=$StyleClass?>"><?=nbsp($TD["name"])?> <?=nbsp($TD["link"])?></td>
 			<td height="1" align="right" class="<?=$StyleClass?>"><pre><?=nbsp($TD["date"])?></pre></td>
 			<td height="1" align="right" class="<?=$StyleClass?>"><pre><?=nbsp($TD["size"])?></pre></td>
 			<td height="1" align="center" class="<?=$StyleClass?>"><pre><?=nbsp($TD["info"])?></pre></td>
