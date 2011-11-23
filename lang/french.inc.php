@@ -1,0 +1,11 @@
+<?php
+define('L_NAME','Nom');
+define('L_DATE','Date');
+define('L_SIZE','Taille');
+define('L_FOLDER','Dossier');
+define('L_SEARCH','Rechercher');
+define('L_CONTAINS','Contenant');
+define('L_THEME','Thème');
+define('L_VERSION','Version');
+define('L_COPYRIGHT','Copyrights');
+?>
