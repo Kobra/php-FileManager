@@ -766,7 +766,7 @@ foreach ($Dirs as $dir)
 	$TD["name"] = "<strong>".$DirLink."</strong>";
 	$TD["date"] = FileDate($ExploreDir."/".$Path."/".$dir);
 	$TD["size"] = "<strong>&#060;FOLDER&#062;</strong>";
-	$TD["link"] = FileLink($lsdir."/".$dir);
+	$TD["link"] = FileLink($ExploreDir."/".$Path."/".$dir);
 	$TD["info"] = "[<a href=\"?Zip=1&Path=".base64_encode($Path."/".$dir)."\">ZIP</a>]";
 	if($AllowWrite) $TD["write"] = "";
 	
