@@ -39,7 +39,7 @@ $Path=str_replace("./","",$Path);
 $Path=str_replace("//","/",$Path);
 
 $ImgExtArr = array(".jpg",".jpeg",".gif",".png");
-$Version = "2.0.6";
+$Version = "2.0.7";
 
 $Version .= "-intl";
 
@@ -985,7 +985,7 @@ function FileDate($filename)
 {
 	global $CharsetOnFS;
 	$ret = stat(cyr_convert($filename,"u",$CharsetOnFS));
-	$ret = date("d.m.Y H:m",$ret["mtime"]);
+	$ret = date("d.m.Y H:i",$ret["mtime"]);
 	return $ret;
 }
 
@@ -1062,9 +1062,9 @@ function FileInfo($File)
 	$InfoArr[] = "Файл:          ".cyr_convert($File,$CharsetOnFS,"u")."\n";
 	$InfoArr[] = "\n";
 	$InfoArr[] = "Размер:        ".number_format($StatArr["size"]/1024,2,","," ")." Kb\n";
-	$InfoArr[] = "Доступ:        ".date("d/m/Y H:m:s",$StatArr["atime"])."\n";
-	$InfoArr[] = "Модифицирован: ".date("d/m/Y H:m:s",$StatArr["mtime"])."\n";
-	$InfoArr[] = "Изменен:       ".date("d/m/Y H:m:s",$StatArr["ctime"])."\n";
+	$InfoArr[] = "Доступ:        ".date("d/m/Y H:i:s",$StatArr["atime"])."\n";
+	$InfoArr[] = "Модифицирован: ".date("d/m/Y H:i:s",$StatArr["mtime"])."\n";
+	$InfoArr[] = "Изменен:       ".date("d/m/Y H:i:s",$StatArr["ctime"])."\n";
 	$InfoArr[] = "\n";
 	$InfoArr[] = "MIME тип:      ".mime_content_type($ExploreDir.$File)."\n";
 	$InfoArr[] = "\n";
