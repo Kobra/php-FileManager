@@ -805,7 +805,8 @@ foreach ($Files as $file)
 }
 
 //Options
-if(!isset($Table)) $Table[] = array("name"=>"","date"=>"","size"=>"","info"=>"");
+//Fill array if no files in dir.
+if(!isset($Table)) $Table[] = array("name"=>"","date"=>"","size"=>"","info"=>"", "link"=>"");
 
 $DescrRow = "";
 $DescrArr = DirDescr($lsdir,false);
